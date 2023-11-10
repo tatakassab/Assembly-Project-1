@@ -1,0 +1,5 @@
+lw x13, 0(x21)
+sub x9, x0, x9
+slli x12, x11, 2
+add x10, x13, x11
+add x10, x10, x9
