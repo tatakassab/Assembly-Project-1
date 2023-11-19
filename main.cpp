@@ -576,11 +576,8 @@ void riscvFormat()
     cout << "The program counter is: " << PC << endl << endl;
 }
 
-void execute(instruction inst)  // to call the function of an insturction based on its name
-{
-    if (inst.name == "lui") // 1
-    {
-        if (inst.rd == 0)
+void executeLUI(instruction inst){
+    if (inst.rd == 0)
         {
             return;
         }
@@ -588,10 +585,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             registers[inst.rd] = inst.imm << 12;
         }
-    }
-    if (inst.name == "auipc") // 2
-    {
-        if (inst.rd == 0)
+}
+
+void executeAUIPC(instruction inst){
+     if (inst.rd == 0)
         {
             return;
         }
@@ -599,10 +596,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         { 
             registers[inst.rd] = (inst.imm << 12)+ PC;
         }
-    }
-    if (inst.name == "jal") // 3
-    {
-        if(inst.rd == 0)
+}
+
+void executeJAL(instruction inst){
+     if(inst.rd == 0)
         {
             registers[inst.rd] = 0;
         }
@@ -616,10 +613,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             exit(1); 
         }  
         PC = labelMap[inst.label] - 4;
-    }
-    if (inst.name == "jalr")  // 4
-    {
-        if(inst.rd == 0)
+}
+
+void executeJALR(instruction inst){
+    if(inst.rd == 0)
         {
             registers[inst.rd] = 0;
         }
@@ -628,10 +625,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             registers[inst.rd] = inst.imm + registers[inst.rs1];
         } 
         PC = inst.imm + registers[inst.rs1] - 4;
-    }
-    if (inst.name == "beq") // 5
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBEQ(instruction inst){
+     if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -645,10 +642,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "bne") // 6
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBNE(instruction inst){
+    if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -662,10 +659,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "blt") // 7
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBLT(instruction inst){
+    if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -679,10 +676,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "bge") // 8
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBGE(instruction inst){
+     if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -696,10 +693,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "bltu") // 9
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBLTU(instruction inst){
+    if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -713,10 +710,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "bgeu") // 10
-    {
-        if(labelMap.find(inst.label) == labelMap.end())
+}
+
+void executeBGEU(instruction inst){
+    if(labelMap.find(inst.label) == labelMap.end())
         {
             cout << "Error in line " << (PC - start_instruc_address)/4 + 1 << " (Instructions file)" << endl;
             exit(1);        
@@ -730,10 +727,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             PC = labelMap[inst.label] - 4;
         }
-    }
-    if (inst.name == "lb") // 11
-    {
-        if(inst.rd==0)
+}
+
+void executeLB(instruction inst){
+    if(inst.rd==0)
         {
             return;
         }
@@ -773,10 +770,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             }
             registers[inst.rd]=binaryToDecimal(newVal);
         }
-    }
-    if (inst.name == "lh") // 12
-    {
-        if(inst.rd==0)
+}
+
+void executeLH(instruction inst){
+    if(inst.rd==0)
         {
             return;
         }
@@ -818,89 +815,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             }
             registers[inst.rd]=binaryToDecimal(newVal);
         }
-    }
-    if (inst.name == "lw") // 13
-    {
-        if(inst.rd== 0)
-        {
-            return;
-        }
-        else if (inst.rs1 == 2) // loading from  stack
-        {
-            int stack = registers[2] + ((1*inst.imm));
-            string val = "00000000000000000000000000000000";
-            val.replace(0, 8, stack_pointer[stack+3].dat_val);
-            val.replace(8, 8, stack_pointer[stack+2].dat_val);
-            val.replace(16, 8, stack_pointer[stack+1].dat_val);
-            val.replace(24, 8, stack_pointer[stack].dat_val);
-            registers[inst.rd] = binaryToDecimal(val);
-        }
-        else
-        {
-            int start_add = inst.imm + registers[inst.rs1];
-            string val = "00000000000000000000000000000000";
-            val.replace(0, 8, data_memory[start_add+3].dat_val);
-            val.replace(8, 8, data_memory[start_add+2].dat_val);
-            val.replace(16, 8, data_memory[start_add+1].dat_val);
-            val.replace(24, 8, data_memory[start_add].dat_val);
-            registers[inst.rd] = binaryToDecimal(val);
-        }
-    }
-    if (inst.name == "lbu") // 14
-    {
-        if ( inst.rd == 0 )
-        {
-            return;
-        }
-        else if (inst.rs1 == 2) // stack pointer
-        {
-            int stack = registers[2] + (1*inst.imm);
-            string val="00000000";
-            val.replace(0, 8, stack_pointer[stack].dat_val);
-            string newVal="000000000000000000000000";
-            newVal+=val;
-            registers[inst.rd]= binaryToDecimal(newVal);
-        }
-        else 
-        {
-            int start_add = inst.imm + registers[inst.rs1];
-            string val="00000000";
-            val.replace(0, 8, data_memory[start_add].dat_val);
-            string newVal="000000000000000000000000";
-            newVal+=val;
-            registers[inst.rd]= binaryToDecimal(newVal);
-        }
-    }
-    if (inst.name == "lhu") // 15
-    {
-        if( inst.rd == 0)
-        {
-            return;
-        }
-        else if (inst.rs1 == 2)// stack pointer
-        {
-            int stack = registers[2] + (1*inst.imm);
-            string val="0000000000000000";
-            val.replace(0, 8, stack_pointer[stack+1].dat_val);
-            val.replace(8, 8, stack_pointer[stack].dat_val);
-            string newVal="0000000000000000";
-            newVal+=val;
-            registers[inst.rd]= binaryToDecimal(newVal);
-        }
-        else 
-        {
-            int start_add = inst.imm + registers[inst.rs1];
-            string val="0000000000000000";
-            val.replace(0, 8, data_memory[start_add+1].dat_val);
-            val.replace(8, 8, data_memory[start_add].dat_val);
-            string newVal="0000000000000000";
-            newVal+=val;
-            registers[inst.rd]= binaryToDecimal(newVal);
-        }
-    }
-    if (inst.name == "sb") // 16
-    {
-        if (inst.rs1 == 2)// stack pointer
+}
+
+void executeSB(instruction inst){
+    if (inst.rs1 == 2)// stack pointer
         {
             int stack = registers[2] + (1*inst.imm);
             string val = decimalToBinary(registers[inst.rd]).substr(24,8);
@@ -912,10 +830,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             string val = decimalToBinary(registers[inst.rd]).substr(24,8);
             data_memory[start_add].dat_val = val.substr(0,8);
         }
-    }
-    if (inst.name == "sh") // 17
-    {
-        if (inst.rs1 == 2) // stack pointer
+}
+
+void executeSH(instruction inst){
+    if (inst.rs1 == 2) // stack pointer
         {
             int stack = registers[2] + (1*inst.imm);
             string val = decimalToBinary(registers[inst.rd]).substr(16,16);
@@ -929,10 +847,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
             data_memory[start_add+1].dat_val = val.substr(0,8);
             data_memory[start_add].dat_val = val.substr(8,8);
         }
-    }
-    if (inst.name == "sw") // 18
-    {
-        if (inst.rs1 == 2) // stack pointer 
+}
+
+void executeSW(instruction inst){
+     if (inst.rs1 == 2) // stack pointer 
         {
             int stack = registers[2] + (1*inst.imm);
             string val = decimalToBinary(registers[inst.rd]).substr(0,32);
@@ -950,10 +868,40 @@ void execute(instruction inst)  // to call the function of an insturction based 
             data_memory[start_add+1].dat_val = val.substr(16, 8);
             data_memory[start_add].dat_val = val.substr(24,8);
         }
-    }
-    if (inst.name == "addi") // 19
-    {
-        if( inst.rd == 0)
+}
+
+void executeSLTI(instruction inst){
+    if(inst.rd== 0)
+        {
+            return;
+        }
+        if (registers[inst.rs1] < inst.imm)
+        {
+            registers[inst.rd] = 1;   // set rd = 1 if rs1 less than imm
+        }
+        else 
+        { 
+            registers[inst.rd] = 0; 
+        }
+}
+
+void executeSLTIU(instruction inst){
+    if( inst.rd== 0)
+        {
+            return;
+        }
+        if ((unsigned int)registers[inst.rs1] < (unsigned int)inst.imm)
+        {
+            registers[inst.rd] = 1;   // set rd = 1 if rs1 less than imm
+        }
+        else 
+        { 
+            registers[inst.rd] = 0; 
+        }
+}
+
+void executeADDI(instruction inst){
+    if( inst.rd == 0)
         {
             return;
         }
@@ -983,109 +931,82 @@ void execute(instruction inst)  // to call the function of an insturction based 
         {
             registers[inst.rd] = registers[inst.rs1] + inst.imm;
         }
-    }
-    if (inst.name == "slti") // 20
-    {
-        if(inst.rd== 0)
-        {
-            return;
-        }
-        if (registers[inst.rs1] < inst.imm)
-        {
-            registers[inst.rd] = 1;   // set rd = 1 if rs1 less than imm
-        }
-        else 
-        { 
-            registers[inst.rd] = 0; 
-        }
-    }
-    if (inst.name == "sltiu") // 21
-    {
-        if( inst.rd== 0)
-        {
-            return;
-        }
-        if ((unsigned int)registers[inst.rs1] < (unsigned int)inst.imm)
-        {
-            registers[inst.rd] = 1;   // set rd = 1 if rs1 less than imm
-        }
-        else 
-        { 
-            registers[inst.rd] = 0; 
-        }
+}
 
-    }
-    if (inst.name == "xori") // 22
-    {   
-        if( inst.rd== 0)
-        {
-            return;
-        }
-        registers[inst.rd] = registers[inst.rs1] ^ inst.imm;
-    }
-    if (inst.name == "ori") // 23
-    {   
-        if( inst.rd== 0)
+void executeORI(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] | inst.imm;
-    }
-    if (inst.name == "andi") // 24
-    {
-        if( inst.rd== 0)
+}
+
+void executeXORI(instruction inst){
+    if( inst.rd== 0)
+        {
+            return;
+        }
+        registers[inst.rd] = registers[inst.rs1] ^ inst.imm;
+}
+
+void executeANDI(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] & inst.imm;
-    }
-    if (inst.name == "slli") // 25
-    {
-        if( inst.rd== 0)
+}
+
+void executeSLLI(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] << inst.imm;
-    }
-    if (inst.name == "srli") // 26
-    {
-        if( inst.rd== 0)
+}
+
+void executeSRLI(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = (unsigned int )registers[inst.rs1] >> inst.imm;
-    }
-    if (inst.name == "srai") // 27
-    {   if( inst.rd== 0)
+}
+
+void executeSRAI(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] >> inst.imm;
-    }
-    if (inst.name == "add") // 28
-    {   if( inst.rd== 0)
+}
+
+void executeADD(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] + registers[inst.rs2];
-    }
-    if (inst.name == "sub") // 29
-    {   if( inst.rd== 0)
+}
+
+void executeSUB(instruction inst){
+     if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] - registers[inst.rs2];
-    }
-    if (inst.name == "sll") // 30
-    {   if( inst.rd== 0)
+}
+
+void executeSLL(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
         registers[inst.rd] = registers[inst.rs1] << registers[inst.rs2];
-    }
-    if (inst.name == "slt") // 31
-    {
-        if( inst.rd== 0)
+}
+
+void executeSLT(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
@@ -1097,10 +1018,10 @@ void execute(instruction inst)  // to call the function of an insturction based 
         { 
             registers[inst.rd] = 0; 
         }
-    }
-    if (inst.name == "sltu") // 32
-    {
-        if( inst.rd== 0)
+}
+
+void executeSLTU(instruction inst){
+    if( inst.rd== 0)
         {
             return;
         }
@@ -1112,66 +1033,311 @@ void execute(instruction inst)  // to call the function of an insturction based 
         { 
             registers[inst.rd] = 0; 
         }
-    }
-    if (inst.name == "xor") // 33
-    {
-        if( inst.rd== 0)
+}
+
+void executeXOR(instruction inst){
+    if( inst.rd== 0)
         {
             return ;
         }
         registers[inst.rd] = registers[inst.rs1] ^ registers[inst.rs2];
-    }
-    if (inst.name == "srl") //34
-    {
-        if( inst.rd== 0)
+}
+
+void executeSRL(instruction inst){
+    if( inst.rd== 0)
         {
             return ;
         }
         registers[inst.rd] = (unsigned int )registers[inst.rs1] >> registers[inst.rs2];
-    }
-    if (inst.name == "sra") //35
-    {
-        if( inst.rd== 0)
+}
+
+void executeSRA(instruction inst){
+    if( inst.rd== 0)
         {
             return ;
         }
         registers[inst.rd] = registers[inst.rs1] >> registers[inst.rs2];
-    }
-    if (inst.name == "or") // 36
-    {
-        if( inst.rd== 0)
+}
+
+void executeOR(instruction inst){
+    if( inst.rd== 0)
         {
             return ;
         }
         registers[inst.rd] = registers[inst.rs1] | registers[inst.rs2];
-    }
-    if (inst.name == "and") // 37
-    {
-        if( inst.rd== 0)
+}
+
+void executeAND(instruction inst){
+     if( inst.rd== 0)
         {
             return ;
         }
         registers[inst.rd] = registers[inst.rs1] & registers[inst.rs2];
+}
+
+void executeFENCE(instruction inst){
+    riscvFormat();
+        cout << "-- program is finished running (0) --" << endl;
+        exit(0);
+}
+
+void executeECALL(instruction inst){
+    riscvFormat();
+        cout << "-- program is finished running (0) --" << endl;
+        exit(0);
+}
+
+void executeEBREAK(instruction inst){
+     riscvFormat();
+        cout << "-- program is finished running (0) --" << endl;
+        exit(0);
+}
+
+void executeLW(instruction inst){
+    if(inst.rd== 0)
+    {
+        return;
+    }
+    else if (inst.rs1 == 2) // loading from  stack
+    {
+        int stack = registers[2] + ((1*inst.imm));
+        string val = "00000000000000000000000000000000";
+        val.replace(0, 8, stack_pointer[stack+3].dat_val);
+        val.replace(8, 8, stack_pointer[stack+2].dat_val);
+        val.replace(16, 8, stack_pointer[stack+1].dat_val);
+        val.replace(24, 8, stack_pointer[stack].dat_val);
+        registers[inst.rd] = binaryToDecimal(val);
+    }
+    else
+    {
+        int start_add = inst.imm + registers[inst.rs1];
+        string val = "00000000000000000000000000000000";
+        val.replace(0, 8, data_memory[start_add+3].dat_val);
+        val.replace(8, 8, data_memory[start_add+2].dat_val);
+        val.replace(16, 8, data_memory[start_add+1].dat_val);
+        val.replace(24, 8, data_memory[start_add].dat_val);
+        registers[inst.rd] = binaryToDecimal(val);
+    }
+}
+
+void executeLHU(instruction inst){
+
+    if( inst.rd == 0)
+    {
+        return;
+    }
+    else if (inst.rs1 == 2)// stack pointer
+    {
+        int stack = registers[2] + (1*inst.imm);
+        string val="0000000000000000";
+        val.replace(0, 8, stack_pointer[stack+1].dat_val);
+        val.replace(8, 8, stack_pointer[stack].dat_val);
+        string newVal="0000000000000000";
+        newVal+=val;
+        registers[inst.rd]= binaryToDecimal(newVal);
+    }
+    else
+    {
+        int start_add = inst.imm + registers[inst.rs1];
+        string val="0000000000000000";
+        val.replace(0, 8, data_memory[start_add+1].dat_val);
+        val.replace(8, 8, data_memory[start_add].dat_val);
+        string newVal="0000000000000000";
+        newVal+=val;
+        registers[inst.rd]= binaryToDecimal(newVal);
+    }
+}
+
+void executeLBU(instruction inst){
+    if ( inst.rd == 0 )
+    {
+        return;
+    }
+    else if (inst.rs1 == 2) // stack pointer
+    {
+        int stack = registers[2] + (1*inst.imm);
+        string val="00000000";
+        val.replace(0, 8, stack_pointer[stack].dat_val);
+        string newVal="000000000000000000000000";
+        newVal+=val;
+        registers[inst.rd]= binaryToDecimal(newVal);
+    }
+    else
+    {
+        int start_add = inst.imm + registers[inst.rs1];
+        string val="00000000";
+        val.replace(0, 8, data_memory[start_add].dat_val);
+        string newVal="000000000000000000000000";
+        newVal+=val;
+        registers[inst.rd]= binaryToDecimal(newVal);
+    }
+}
+void execute(instruction inst)  // to call the function of an insturction based on its name
+{
+    if (inst.name == "lui") // 1
+    {
+        executeLUI(inst);
+    }
+    if (inst.name == "auipc") // 2
+    {
+       executeAUIPC(inst);
+    }
+    if (inst.name == "jal") // 3
+    {
+       executeJAL(inst);
+    }
+    if (inst.name == "jalr")  // 4
+    {
+        executeJALR(inst);
+    }
+    if (inst.name == "beq") // 5
+    {
+       executeBEQ(inst);
+    }
+    if (inst.name == "bne") // 6
+    {
+        executeBNE(inst);
+    }
+    if (inst.name == "blt") // 7
+    {
+        executeBLT(inst);
+    }
+    if (inst.name == "bge") // 8
+    {
+       executeBGE(inst);
+    }
+    if (inst.name == "bltu") // 9
+    {
+        executeBLTU(inst);
+    }
+    if (inst.name == "bgeu") // 10
+    {
+        executeBGEU(inst);
+    }
+    if (inst.name == "lb") // 11
+    {
+        executeLB(inst);
+    }
+    if (inst.name == "lh") // 12
+    {
+        executeLH(inst);
+    }
+    if (inst.name == "lw") // 13
+    {
+        executeLW(inst);
+    }
+    if (inst.name == "lbu") // 14
+    {
+        executeLBU(inst);
+    }
+    if (inst.name == "lhu") // 15
+    {
+        executeLHU(inst);
+    }
+    if (inst.name == "sb") // 16
+    {
+        executeSB(inst);
+    }
+    if (inst.name == "sh") // 17
+    {
+        executeSH(inst);
+    }
+    if (inst.name == "sw") // 18
+    {
+       executeSW(inst);
+    }
+    if (inst.name == "addi") // 19
+    {
+        executeADDI(inst);
+    }
+    if (inst.name == "slti") // 20
+    {
+        executeSLTI(inst);
+    }
+    if (inst.name == "sltiu") // 21
+    {
+        executeSLTIU(inst);
+
+    }
+    if (inst.name == "xori") // 22
+    {   
+        executeXORI(inst);
+    }
+    if (inst.name == "ori") // 23
+    {   
+        executeORI(inst);
+    }
+    if (inst.name == "andi") // 24
+    {
+        executeANDI(inst);
+    }
+    if (inst.name == "slli") // 25
+    {
+        executeSLLI(inst);
+    }
+    if (inst.name == "srli") // 26
+    {
+        executeSRLI(inst);
+    }
+    if (inst.name == "srai") // 27
+    {   
+
+        executeSRAI(inst);
+    }
+    if (inst.name == "add") // 28
+    {   
+        executeADD(inst);
+    }
+    if (inst.name == "sub") // 29
+    {  
+        executeSUB(inst);
+    }
+    if (inst.name == "sll") // 30
+    {   
+        executeSLL(inst);
+    }
+    if (inst.name == "slt") // 31
+    {
+        executeSLT(inst);
+    }
+    if (inst.name == "sltu") // 32
+    {
+        executeSLTU(inst);
+    }
+    if (inst.name == "xor") // 33
+    {
+        executeXOR(inst);
+    }
+    if (inst.name == "srl") //34
+    {
+        executeSRL(inst);
+    }
+    if (inst.name == "sra") //35
+    {
+        executeSRA(inst);
+    }
+    if (inst.name == "or") // 36
+    {
+        executeOR(inst);
+    }
+    if (inst.name == "and") // 37
+    {
+       executeAND(inst);
     }
     if (inst.name == "fence") // 38
     {
-        riscvFormat();
-        cout << "-- program is finished running (0) --" << endl;
-        exit(0);
+        executeFENCE(inst);
     }
     if (inst.name == "ecall") // 39
     {
-        riscvFormat();
-        cout << "-- program is finished running (0) --" << endl;
-        exit(0);
+        executeECALL(inst);
     }
     if (inst.name == "ebreak") // 40
     {
-        riscvFormat();
-        cout << "-- program is finished running (0) --" << endl;
-        exit(0);
+       executeEBREAK(inst);
     }
 }
+
 
 void run_code()
 {
