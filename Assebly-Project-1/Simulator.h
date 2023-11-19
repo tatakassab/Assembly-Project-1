@@ -24,7 +24,7 @@ private:
 	void setPC(unsigned int);
 	unsigned int getPC();
 	void incrementPC();
-	void incrementSP(int);
+	void checkSP();
 	void setRegister(string, int); //takes in a string X1, or T1
 	int getRegister(string); //takes in a string X1, or $1, or $t1
 	void returnError(string); //Error handling
@@ -45,7 +45,7 @@ private:
 	vector<string> IType = { "ADDI", "SLTI", "SLTIU", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI"};
 	vector<string> SType = { "SW", "SB", "SH" };
 	vector<string> SBType = { "BEQ", "BNE", "BLT", "BGE", "BLTU", "BGEU"};
-	vector<string> RType = { "ADD", "SUB", "SLL", "SLT", "SLTU", "XOR", "SRL", "SRA", "OR", "AND"};
+	vector<string> RType = { "ADD", "SUB", "SLL", "SLT", "SLTU", "XOR", "SRL", "SRA", "OR", "AND", "MUL", "MULH", "MULHU", "MULHSU","DIV","DIVU","REM","REMU"};
 	vector<string> RegNames = { "ZERO", "RA", "SP", "GP", "TP", "T0", "T1", "T2", "S0", "S1", "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "T3", "T4", "T5", "T6" };
 	bool isInt(string);
 	bool isReg(string);
@@ -94,6 +94,14 @@ private:
 	void executeLW(vector<string> inst);
 	void executeLHU(vector<string> inst);
 	void executeLBU(vector<string> inst);
+	void executeMUL(vector<string> inst);
+	void executeMULH(vector<string> inst);
+	void executeMULHU(vector<string> inst);
+	void executeMULHSU(vector<string> inst);
+	void executeDIV(vector<string> inst);
+	void executeDIVU(vector<string> inst);
+	void executeREM(vector<string> inst);
+	void executeREMU(vector<string> inst);
 };
 
 #endif // !SIMULATOR

@@ -5,14 +5,16 @@ D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Asse
 D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(106,13): warning C4101: 'n': unreferenced local variable
 D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(110,31): warning C4101: 'e': unreferenced local variable
 D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(201,42): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(331,60): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(324,32): warning C4101: 'e': unreferenced local variable
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(364,59): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(357,32): warning C4101: 'e': unreferenced local variable
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(604,2): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(821,28): warning C4018: '<': signed/unsigned mismatch
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(950,28): warning C4018: '<': signed/unsigned mismatch
-D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(994,45): warning C4018: '<': signed/unsigned mismatch
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(309,24): warning C4018: '>': signed/unsigned mismatch
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(313,29): warning C4018: '<': signed/unsigned mismatch
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(338,60): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(331,32): warning C4101: 'e': unreferenced local variable
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(374,59): warning C4244: '=': conversion from '__int64' to 'int', possible loss of data
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(367,32): warning C4101: 'e': unreferenced local variable
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(647,2): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(864,28): warning C4018: '<': signed/unsigned mismatch
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(993,28): warning C4018: '<': signed/unsigned mismatch
+D:\AUC\CSCE\Assembly and Computer Organization\Project 1\Assembly-Project-1\Assebly-Project-1\Simulator.cpp(1037,45): warning C4018: '<': signed/unsigned mismatch
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\utility(190,48): warning C4267: 'initializing': conversion from 'size_t' to '_Ty2', possible loss of data
           with
           [

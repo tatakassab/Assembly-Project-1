@@ -304,19 +304,15 @@ void Simulator::incrementPC()
 	PC = PC + 4;
 }
 
-void Simulator::incrementSP(int i)
+void Simulator::checkSP()
 {
-	unsigned int new_val = getRegister("SP") + i;
-	if (new_val > stack_upper + 4) {
+	if (getRegister("SP") > stack_upper + 4) {
 		returnError("Stack Pointer is trying to access restricted address");
 		return;
 	}
-	else if (new_val < stack_lower) {
+	else if (getRegister("SP") < stack_lower) {
 		returnError("Stack Overflow");
 		return;
-	}
-	else {
-		setRegister("SP", new_val);
 	}
 }
 
@@ -342,13 +338,16 @@ void Simulator::setRegister(string reg, int val)
 		reg_number = find(RegNames.begin(), RegNames.end(), reg) - RegNames.begin();
 	}
 
-	if (reg_number > 32 || reg_number < 0) {
+	if (reg_number >= 32 || reg_number < 0) {
 		returnError("Invalid Register Number");
 		return;
 	}
 
 	if (reg_number != 0) {
 		Registers[reg_number] = val;
+	}
+	if (reg_number == 2) {
+		checkSP();
 	}
 	return;
 }
@@ -375,7 +374,7 @@ int Simulator::getRegister(string in)
 		reg_number = find(RegNames.begin(), RegNames.end(), in) - RegNames.begin();
 	}
 
-	if (reg_number > 32 || reg_number < 0) {
+	if (reg_number >= 32 || reg_number < 0) {
 		returnError("Invalid Register Number");
 		return 0;
 	}
@@ -385,6 +384,7 @@ int Simulator::getRegister(string in)
 void Simulator::returnError(string err)
 {
 	cout << err << endl;
+	exit(1);
 }
 
 unsigned int Simulator::getRelevantPC()
@@ -458,151 +458,183 @@ void Simulator::execute(vector<string> inst)
 	{
 		executeLUI(inst);
 	}
-	if (inst.at(0) == "AUIPC")
+	else if (inst.at(0) == "AUIPC")
 	{
 		executeAUIPC(inst);
 	}
-	if (inst.at(0) == "JAL")
+	else if (inst.at(0) == "JAL")
 	{
 		executeJAL(inst);
 	}
-	if (inst.at(0) == "JALR")
+	else if (inst.at(0) == "JALR")
 	{
 		executeJALR(inst);
 	}
-	if (inst.at(0) == "BEQ")
+	else if (inst.at(0) == "BEQ")
 	{
 		executeBEQ(inst);
 	}
-	if (inst.at(0) == "BNE")
+	else if (inst.at(0) == "BNE")
 	{
 		executeBNE(inst);
 	}
-	if (inst.at(0) == "BLT")
+	else if (inst.at(0) == "BLT")
 	{
 		executeBLT(inst);
 	}
-	if (inst.at(0) == "BGE")
+	else if (inst.at(0) == "BGE")
 	{
 		executeBGE(inst);
 	}
-	if (inst.at(0) == "BLTU")
+	else if (inst.at(0) == "BLTU")
 	{
 		executeBLTU(inst);
 	}
-	if (inst.at(0) == "BGEU")
+	else if (inst.at(0) == "BGEU")
 	{
 		executeBGEU(inst);
 	}
-	if (inst.at(0) == "LB")
+	else if (inst.at(0) == "LB")
 	{
 		executeLB(inst);
 	}
-	if (inst.at(0) == "LH")
+	else if (inst.at(0) == "LH")
 	{
 		executeLH(inst);
 	}
-	if (inst.at(0) == "LW")
+	else if (inst.at(0) == "LW")
 	{
 		executeLW(inst);
 	}
-	if (inst.at(0) == "LBU")
+	else if (inst.at(0) == "LBU")
 	{
 		executeLBU(inst);
 	}
-	if (inst.at(0) == "LHU")
+	else if (inst.at(0) == "LHU")
 	{
 		executeLHU(inst);
 	}
-	if (inst.at(0) == "SB")
+	else if (inst.at(0) == "SB")
 	{
 		executeSB(inst);
 	}
-	if (inst.at(0) == "SH")
+	else if (inst.at(0) == "SH")
 	{
 		executeSH(inst);
 	}
-	if (inst.at(0) == "SW")
+	else if (inst.at(0) == "SW")
 	{
 		executeSW(inst);
 	}
-	if (inst.at(0) == "ADDI")
+	else if (inst.at(0) == "ADDI")
 	{
 		executeADDI(inst);
 	}
-	if (inst.at(0) == "SLTI")
+	else if (inst.at(0) == "SLTI")
 	{
 		executeSLTI(inst);
 	}
-	if (inst.at(0) == "SLTIU")
+	else if (inst.at(0) == "SLTIU")
 	{
 		executeSLTIU(inst);
 
 	}
-	if (inst.at(0) == "XORI")
+	else if (inst.at(0) == "XORI")
 	{
 		executeXORI(inst);
 	}
-	if (inst.at(0) == "ORI")
+	else if (inst.at(0) == "ORI")
 	{
 		executeORI(inst);
 	}
-	if (inst.at(0) == "ANDI")
+	else if (inst.at(0) == "ANDI")
 	{
 		executeANDI(inst);
 	}
-	if (inst.at(0) == "SLLI")
+	else if (inst.at(0) == "SLLI")
 	{
 		executeSLLI(inst);
 	}
-	if (inst.at(0) == "SRLI")
+	else if (inst.at(0) == "SRLI")
 	{
 		executeSRLI(inst);
 	}
-	if (inst.at(0) == "SRAI")
+	else if (inst.at(0) == "SRAI")
 	{
 
 		executeSRAI(inst);
 	}
-	if (inst.at(0) == "ADD")
+	else if (inst.at(0) == "ADD")
 	{
 		executeADD(inst);
 	}
-	if (inst.at(0) == "SUB")
+	else if (inst.at(0) == "SUB")
 	{
 		executeSUB(inst);
 	}
-	if (inst.at(0) == "SLL")
+	else if (inst.at(0) == "SLL")
 	{
 		executeSLL(inst);
 	}
-	if (inst.at(0) == "SLT")
+	else if (inst.at(0) == "SLT")
 	{
 		executeSLT(inst);
 	}
-	if (inst.at(0) == "SLTU")
+	else if (inst.at(0) == "SLTU")
 	{
 		executeSLTU(inst);
 	}
-	if (inst.at(0) == "XOR")
+	else if (inst.at(0) == "XOR")
 	{
 		executeXOR(inst);
 	}
-	if (inst.at(0) == "SRL")
+	else if (inst.at(0) == "SRL")
 	{
 		executeSRL(inst);
 	}
-	if (inst.at(0) == "SRA")
+	else if (inst.at(0) == "SRA")
 	{
 		executeSRA(inst);
 	}
-	if (inst.at(0) == "OR")
+	else if (inst.at(0) == "OR")
 	{
 		executeOR(inst);
 	}
-	if (inst.at(0) == "AND")
+	else if (inst.at(0) == "AND")
 	{
 		executeAND(inst);
+	}
+	else if (inst.at(0) == "MUL")
+	{
+		executeMUL(inst);
+	}
+	else if (inst.at(0) == "MULH")
+	{
+		executeMULH(inst);
+	}
+	else if (inst.at(0) == "MULHU")
+	{
+	executeMULHU(inst);
+	}
+	else if (inst.at(0) == "MULHSU")
+	{
+	executeMULHSU(inst);
+	}
+	else if (inst.at(0) == "DIV")
+	{
+	executeDIV(inst);
+	}
+	else if (inst.at(0) == "DIVU")
+	{
+	executeDIVU(inst);
+	}
+	else if (inst.at(0) == "REM")
+	{
+	executeREM(inst);
+	}
+	else if (inst.at(0) == "REMU")
+	{
+	executeREMU(inst);
 	}
 }
 
@@ -1222,4 +1254,44 @@ void Simulator::executeLH(vector<string> inst) {
 		returnError("Invalid Immediat");
 	}
 
+}
+
+void Simulator::executeMUL(vector<string> inst) {
+	int32_t result = static_cast<int32_t>((int64_t(getRegister(inst.at(2)) * int64_t(getRegister(inst.at(3))))));
+	setRegister(inst.at(1),result);
+}
+
+void Simulator::executeMULH(vector<string> inst) {
+	int32_t result = static_cast<int32_t>((int64_t(getRegister(inst.at(2)) * int64_t(getRegister(inst.at(3))))) >> 32);
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeMULHU(vector<string> inst) {
+	uint32_t result = static_cast<uint32_t>((uint64_t(getRegister(inst.at(2)) * uint64_t(getRegister(inst.at(3))))) >> 32);
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeMULHSU(vector<string> inst) {
+	int32_t result = static_cast<int32_t>((int64_t(getRegister(inst.at(2)) * uint64_t(getRegister(inst.at(3))))) >> 32);
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeDIV(vector<string> inst) {
+	int result = getRegister(inst.at(2)) / getRegister(inst.at(3));
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeDIVU(vector<string> inst) {
+	unsigned int result = (unsigned int)getRegister(inst.at(2)) / (unsigned int)getRegister(inst.at(3));
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeREM(vector<string> inst) {
+	int result = getRegister(inst.at(2)) % getRegister(inst.at(3));
+	setRegister(inst.at(1), result);
+}
+
+void Simulator::executeREMU(vector<string> inst) {
+	unsigned int result = (unsigned int)getRegister(inst.at(2)) % (unsigned int)getRegister(inst.at(3));
+	setRegister(inst.at(1), result);
 }
