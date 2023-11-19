@@ -2,20 +2,49 @@
 
 **Team Members:**
 1. [Mohamed Abdelmagid], ID: 900223215
-2. [Tarek Kassab], ID: 
-3. [Shaza Ali], ID: 
+2. [Tarek Kassab], ID: 900213491
+3. [Shaza Ali], ID: 900213391
 
 ### 1. Brief Description of Implementation
 
-Our RISC-V simulator is designed to emulate the behavior of a RISC-V instructions, supporting a wide range of instructions. The simulator includes the basic set of instructions, arithmetic and logical operations, memory access instructions, conditional branches, jumps, and multiplication/division instructions. We implemented bonus features such as support for the multiplication and dicision instructions (First Bonus). We added test cases for real programs (Second Bonus). We also support providing data in binary, hexadecimal, and deciaml as well (Third Bonus).
+Our RISC-V simulator is designed to simulate the behavior of a RISC-V instructions, supporting a wide range of instructions. The simulator includes the basic set of instructions, arithmetic and logical operations, memory access instructions, conditional branches, and jumps. We implemented bonus features such as support for the multiplication and dicision instructions (First Bonus). We added test cases for real programs (Second Bonus). We also support providing data in binary, hexadecimal, and deciaml as well (Third Bonus).
 
 ### 2. Design Decisions and Assumptions
 
-- **Modular Design:** We adopted a modular design to enhance maintainability. Different components handle specific instruction types, allowing for easy extension and modification.
-  
-- **Memory Management:** Our simulator assumes a simple memory model with separate data and instruction memory. Memory is initialized with default values, and the stack grows downward.
-  
-- **Error Handling:** We implemented error checks for boundary violations, undefined instructions, and memory access issues. In case of an error, the simulator provides meaningful error messages.
+1. **Modularity:**
+   - Decision: Separate the simulator into distinct modules or classes for better organization.
+   - Reasoning: Modular design allows for easier maintenance, testing, and extension of the simulator.
+
+2. **Instruction Execution Model:**
+   - Decision: Implement an execution model that follows the RISC-V instruction set architecture. It is a single function called `execute` to call the other funcion that is related to the instruction.
+   - Reasoning: Adhering to the RISC-V ISA ensures compatibility with RISC-V programs and facilitates easier validation against the official specification.
+
+3. **Memory Representation:**
+   - Decision: Use a memory data structure for instructions as a vector of strings and memory as a map to simulate load and store operations.
+
+4. **Error Handling:**
+   - Decision: Implement error-checking mechanisms for invalid instructions, memory access violations, or other exceptional conditions.
+   - Reasoning: Robust error handling improves the simulator's reliability and aids in debugging.
+
+
+### Assumptions:
+
+1. **Correct Input Programs:**
+   - Assumption: Input programs are correctly written RISC-V assembly code.
+   - Reasoning: The simulator focuses on the execution of valid RISC-V instructions. Handling invalid or malformed input just by telling the user that there is an error in a certain line.
+
+2. **Little-Endian Architecture:**
+   - Assumption: The simulator assumes a little-endian memory architecture unless specified otherwise.
+   - Reasoning: Little-endian is a common architecture, and assuming it simplifies memory access and byte-ordering operations.
+
+3. **Single-Threaded Execution:**
+   - Assumption: The simulator assumes single-threaded execution and does not handle multi-threading or parallelism.
+   - Reasoning: Simplifying the simulator to a single-threaded model reduces complexity and is suitable for many educational or introductory purposes.
+
+4. **Static Memory Allocation:**
+   - Assumption: Memory allocation is static, and there is no support for dynamic memory management (e.g., malloc/free).
+   - Reasoning: Dynamic memory management adds complexity, and a focus on static allocation aligns with the simplicity often desired in simulators.
+
 
 ### 3. Known Bugs or Issues
 
