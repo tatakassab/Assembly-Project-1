@@ -52,6 +52,47 @@ private:
 	bool isFunc(string);
 	unsigned int stack_upper = 8912896; //0x880000
 	unsigned int stack_lower = 8388608; //0x800000
+	vector<unsigned char> getBytes(int);
+
+	//Instructions
+	int binaryToDecimal(string binary);
+	void executeLUI(vector<string> inst);
+	void executeAUIPC(vector<string> inst);
+	void executeJAL(vector<string> inst);
+	void executeJALR(vector<string> inst);
+	void executeBEQ(vector<string> inst);
+	void executeBNE(vector<string> inst);
+	void executeBLT(vector<string> inst);
+	void executeBGE(vector<string> inst);
+	void executeBLTU(vector<string> inst);
+	void executeBGEU(vector<string> inst);
+	void executeLB(vector<string> inst);
+	void executeLH(vector<string> inst);
+	void executeSB(vector<string> inst);
+	void executeSH(vector<string> inst);
+	void executeSW(vector<string> inst);
+	void executeSLTI(vector<string> inst);
+	void executeSLTIU(vector<string> inst);
+	void executeADDI(vector<string> inst);
+	void executeORI(vector<string> inst);
+	void executeXORI(vector<string> inst);
+	void executeANDI(vector<string> inst);
+	void executeSLLI(vector<string> inst);
+	void executeSRLI(vector<string> inst);
+	void executeSRAI(vector<string> inst);
+	void executeADD(vector<string> inst);
+	void executeSUB(vector<string> inst);
+	void executeSLL(vector<string> inst);
+	void executeSLT(vector<string> inst);
+	void executeSLTU(vector<string> inst);
+	void executeXOR(vector<string> inst);
+	void executeSRL(vector<string> inst);
+	void executeSRA(vector<string> inst);
+	void executeOR(vector<string> inst);
+	void executeAND(vector<string> inst);
+	void executeLW(vector<string> inst);
+	void executeLHU(vector<string> inst);
+	void executeLBU(vector<string> inst);
 };
 
 #endif // !SIMULATOR

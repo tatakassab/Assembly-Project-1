@@ -1,0 +1,6 @@
+1000
+lw x13, 0(x21)
+addi x9, x0, 7
+slli x12, x11, 2
+add x2, x13, x11
+add x10, x10, x9

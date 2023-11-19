@@ -46,38 +46,43 @@ void Simulator::getInstructions()
 	try
 	{
 		input.open(data);
+	
+		//Gets Data
+		while (getline(input, line));
+		{
+			int split = line.find(',');
+			try
+			{
+				unsigned int mem_loc = stoi(line.substr(0, split));
+				int data = stoi(line.substr(split + 1, line.length()));
+				if (mem_loc % 4 != 0) {
+					throw 1;
+				}
+				if (mem_loc <= stack_upper && mem_loc >= stack_lower) { //location in stack
+					throw 1;
+				}
+				if (mem_loc >= PC && mem_loc < PC + (instructions.size()*4)) { //location is already occupied by an instruction
+					throw 1;
+				}
+				Memory.insert(pair<unsigned int, int>(mem_loc, data));
+			}
+			catch (int n) {
+				returnError("Syntax Error in Data Reading, Make sure that every line consists of a number divisible by 4 and not occupied by the stack or instructions for address, then comma, then data as an integer");
+				return;
+			}
+			catch (const std::exception&)
+			{
+				returnError("Syntax Error in Data Reading, Make sure that every line consists of a number divisible by 4 and not occupied by the stack or instructions for address, then comma, then data as an integer");
+				return;
+			}
+		}
+		input.close();
 	}
 	catch (const std::exception&)
 	{
 		returnError("Error opening data file");
 		return;
 	}
-	//Gets Data
-	while (getline(input, line));
-	{
-		int split = line.find(',');
-		try
-		{
-			unsigned int mem_loc = stoi(line.substr(0, split));
-			int data = stoi(line.substr(split + 1, line.length()));
-			if (mem_loc % 4 != 0) {
-				throw 1;
-			}
-			if (mem_loc <= stack_upper && mem_loc >= stack_lower) { //location in stack
-				throw 1;
-			}
-			if (mem_loc >= PC && mem_loc < PC + (instructions.size()*4)) { //location is already occupied by an instruction
-				throw 1;
-			}
-		}
-		catch (const std::exception&)
-		{
-			returnError("Syntax Error in Data Reading, Make sure that every line consists of a number divisible by 4 and not occupied by the stack or instructions for address, then comma, then data as an integer");
-			return;
-		}
-		Memory.insert(pair<unsigned int, int>(mem_loc, data));
-	}
-	input.close();
 
 	setRegister("SP", stack_upper + 4);
 
@@ -97,6 +102,10 @@ bool Simulator::validate()
 		{
 			throw 1;
 		}
+	}
+	catch (int n) {
+		returnError("PC value must be positive");
+		return false;
 	}
 	catch (const std::exception& e)
 	{
@@ -203,32 +212,41 @@ void Simulator::execInstructions()
 		currentI = getRelevantPC();
 	}
 }
-
-void Simulator::execute(vector<string> instruction)
-{
-	//instruction: This is an array of words having one instruction, all of them are Upper Case
-	if (instruction.at(0) == "ADD") {
-		//do ADD logic
-	}
-}
-string Simulator::DecToHex(int output)
+string DecToHex(int output)
 {
 	string hex;
 	for (int i = 0; output > 0; i++)
 	{
-		hex += to_string(output % 16);
+		int remainder = output % 16;
+		if (remainder <= 9)
+			hex += to_string(remainder);
+		else if (remainder == 10)
+			hex += 'A';
+		else if (remainder == 11)
+			hex += 'B';
+		else if (remainder == 12)
+			hex += 'C';
+		else if (remainder == 13)
+			hex += 'D';
+		else if (remainder == 14)
+			hex += 'E';
+		else if (remainder == 15)
+			hex += 'F';
+
 		output = output / 16;
 	}
+	reverse(hex.begin(), hex.end());
 	return hex;
 }
-string Simulator::DecToBin(int output)
+string DecToBin(int output)
 {
 	string bin;
-	for (int i = 0; output >0 ; i++)
+	for (int i = 0; output > 0; i++)
 	{
-		bin+= to_string( output % 2);
+		bin += to_string(output % 2);
 		output = output / 2;
 	}
+	reverse(bin.begin(), bin.end());
 	return bin;
 }
 void Simulator::output()
@@ -238,7 +256,7 @@ void Simulator::output()
 	cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
 	for (int i = 0; i < 32; i++)
 	{
-		cout << setw(16) << Regnames[i] << left << setw(18) << "x" + to_string(i) << setw(40) << DecToBin(Registers[i]) << setw(25) << Registers[i] << setw(25) << DecToHex(Registers[i]) << endl;
+		cout << setw(16) << RegNames[i] << left << setw(18) << "x" + to_string(i) << setw(40) << DecToBin(Registers[i]) << setw(25) << Registers[i] << setw(25) << DecToHex(Registers[i]) << endl;
 	}
 	cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
 	if (Memory.empty())
@@ -293,7 +311,7 @@ void Simulator::incrementSP(int i)
 
 void Simulator::setRegister(string reg, int val)
 {
-	if (!isReg(string)) {
+	if (!isReg(reg)) {
 		returnError("Invalid Register Name used");
 		return;
 	}
@@ -310,7 +328,7 @@ void Simulator::setRegister(string reg, int val)
 		}
 	}
 	else {
-		reg_number = find(RegNames.begin(), RegNames.end(), reg) - find.begin();
+		reg_number = find(RegNames.begin(), RegNames.end(), reg) - RegNames.begin();
 	}
 
 	if (reg_number > 32 || reg_number < 0) {
@@ -326,15 +344,15 @@ void Simulator::setRegister(string reg, int val)
 
 int Simulator::getRegister(string in)
 {
-	if (!isReg(string)) {
+	if (!isReg(in)) {
 		returnError("Invalid Register Name used");
 		return 0;
 	}
 	int reg_number;
-	if (reg[0] == 'X') {
+	if (in[0] == 'X') {
 		try
 		{
-			reg_number = stoi(reg.substr(1, reg.length() - 1));
+			reg_number = stoi(in.substr(1, in.length() - 1));
 		}
 		catch (const std::exception& e)
 		{
@@ -343,7 +361,7 @@ int Simulator::getRegister(string in)
 		}
 	}
 	else {
-		reg_number = find(RegNames.begin(), RegNames.end(), reg) - find.begin();
+		reg_number = find(RegNames.begin(), RegNames.end(), in) - RegNames.begin();
 	}
 
 	if (reg_number > 32 || reg_number < 0) {
@@ -355,7 +373,7 @@ int Simulator::getRegister(string in)
 
 void Simulator::returnError(string err)
 {
-	cout << err << "\n".
+	cout << err << endl;
 }
 
 unsigned int Simulator::getRelevantPC()
@@ -386,7 +404,7 @@ bool Simulator::isReg(string in)
 		return true;
 	}
 	if (in.length() < 4 && in[0] == 'X') {
-		if (isInt(in.substr(1, in.length() - 1)) {
+		if (isInt(in.substr(1, in.length() - 1))) {
 			int x = stoi((in.substr(1, in.length() - 1)));
 			if (x < 32 && x >= 0) {
 				return true;
@@ -399,8 +417,424 @@ bool Simulator::isReg(string in)
 
 bool Simulator::isFunc(string in)
 {
-	if (find(functions.begin(), functions.end(), in) != functions.end()) {
+	if (functions.find(in) != functions.end()) {
 		return true;
 	}
 	return false;
+}
+
+vector<unsigned char> Simulator::getBytes(int n) {
+	vector<unsigned char> bytes(4);
+
+	bytes[0] = (n >> 24) & 0xFF;
+	bytes[1] = (n >> 16) & 0xFF;
+	bytes[2] = (n >> 8) & 0xFF;
+	bytes[3] = (n >> 0) & 0xFF;
+	return bytes;
+}
+
+void Simulator::execute(vector<string> inst)
+{
+	//instruction: This is an array of words having one instruction, all of them are Upper Case
+	if (inst.at(0) == "LUI")
+	{
+		executeLUI(inst);
+	}
+	if (inst.at(0) == "AUIPC")
+	{
+		executeAUIPC(inst);
+	}
+	if (inst.at(0) == "JAL")
+	{
+		executeJAL(inst);
+	}
+	if (inst.at(0) == "JALR")
+	{
+		executeJALR(inst);
+	}
+	if (inst.at(0) == "BEQ")
+	{
+		executeBEQ(inst);
+	}
+	if (inst.at(0) == "BNE")
+	{
+		executeBNE(inst);
+	}
+	if (inst.at(0) == "BLT")
+	{
+		executeBLT(inst);
+	}
+	if (inst.at(0) == "BGE")
+	{
+		executeBGE(inst);
+	}
+	if (inst.at(0) == "BLTU")
+	{
+		executeBLTU(inst);
+	}
+	if (inst.at(0) == "BGEU")
+	{
+		executeBGEU(inst);
+	}
+	if (inst.at(0) == "LB")
+	{
+		executeLB(inst);
+	}
+	if (inst.at(0) == "LH")
+	{
+		executeLH(inst);
+	}
+	if (inst.at(0) == "LW")
+	{
+		executeLW(inst);
+	}
+	if (inst.at(0) == "LBU")
+	{
+		executeLBU(inst);
+	}
+	if (inst.at(0) == "LHU")
+	{
+		executeLHU(inst);
+	}
+	if (inst.at(0) == "SB")
+	{
+		executeSB(inst);
+	}
+	if (inst.at(0) == "SH")
+	{
+		executeSH(inst);
+	}
+	if (inst.at(0) == "SW")
+	{
+		executeSW(inst);
+	}
+	if (inst.at(0) == "ADDI")
+	{
+		executeADDI(inst);
+	}
+	if (inst.at(0) == "SLTI")
+	{
+		executeSLTI(inst);
+	}
+	if (inst.at(0) == "SLTIU")
+	{
+		executeSLTIU(inst);
+
+	}
+	if (inst.at(0) == "XORI")
+	{
+		executeXORI(inst);
+	}
+	if (inst.at(0) == "ORI")
+	{
+		executeORI(inst);
+	}
+	if (inst.at(0) == "ANDI")
+	{
+		executeANDI(inst);
+	}
+	if (inst.at(0) == "SLLI")
+	{
+		executeSLLI(inst);
+	}
+	if (inst.at(0) == "SRLI")
+	{
+		executeSRLI(inst);
+	}
+	if (inst.at(0) == "SRAI")
+	{
+
+		executeSRAI(inst);
+	}
+	if (inst.at(0) == "ADD")
+	{
+		executeADD(inst);
+	}
+	if (inst.at(0) == "SUB")
+	{
+		executeSUB(inst);
+	}
+	if (inst.at(0) == "SLL")
+	{
+		executeSLL(inst);
+	}
+	if (inst.at(0) == "SLT")
+	{
+		executeSLT(inst);
+	}
+	if (inst.at(0) == "SLTU")
+	{
+		executeSLTU(inst);
+	}
+	if (inst.at(0) == "XOR")
+	{
+		executeXOR(inst);
+	}
+	if (inst.at(0) == "SRL")
+	{
+		executeSRL(inst);
+	}
+	if (inst.at(0) == "SRA")
+	{
+		executeSRA(inst);
+	}
+	if (inst.at(0) == "OR")
+	{
+		executeOR(inst);
+	}
+	if (inst.at(0) == "AND")
+	{
+		executeAND(inst);
+	}
+}
+
+
+
+int Simulator::binaryToDecimal(string binary)
+{
+	int decimal = 0;
+	int position = 1;
+	for (int i = binary.size() - 1; i >= 0; i--)
+	{
+		if (binary[i] == '1')
+		{
+			decimal += position;
+		}
+		position *= 2;
+	}
+	return decimal;
+}
+
+void Simulator::executeLUI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		setRegister(inst.at(1), imm << 12);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid immediate");
+		return;
+	}
+}
+
+void Simulator::executeAUIPC(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		setRegister(inst.at(1), (imm << 12) + PC);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid immediate");
+		return;
+	}
+}
+
+void Simulator::executeJAL(vector<string> inst) {
+	setRegister(inst.at(1), getPC() + 4);
+	if (functions.find(inst.at(2)) == functions.end()) {
+		returnError("Calling a non-existant function");
+	}
+	else {
+		setPC( (functions.find(inst.at(2)) -> second)-4 );
+	}
+}
+
+void Simulator::executeJALR(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		setRegister(inst.at(1), imm + getRegister(inst.at(3)));
+		setPC(imm + getRegister(inst.at(3)) - 4);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+}
+
+void Simulator::executeBEQ(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if (getRegister(inst.at(1)) == getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeBNE(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if (getRegister(inst.at(1)) != getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeBLT(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if (getRegister(inst.at(1)) < getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeBGE(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if (getRegister(inst.at(1)) >= getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeBLTU(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if ((unsigned int)getRegister(inst.at(1)) < (unsigned int)getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeBGEU(vector<string> inst) {
+	if (functions.find(inst.at(3)) == functions.end()) {
+		returnError("Calling a non-existant function");
+		return;
+	}
+	if ((unsigned int)getRegister(inst.at(1)) >= (unsigned int)getRegister(inst.at(2)))
+	{
+		setPC((functions.find(inst.at(3))->second) - 4);
+	}
+}
+
+void Simulator::executeLB(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		if (Memory.find(add - (add % 4)) == Memory.end()) {
+			setRegister(inst.at(1), 0);
+		}
+		else {
+			int word = Memory.find(add - (add % 4))->second;
+			int byte = getBytes(word).at(add % 4);
+			setRegister(inst.at(1), byte);
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+	
+}
+
+void Simulator::executeLH(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		if (add % 4 == 3) {
+			int val0 = 0;
+			int val1 = 0;
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				val0 = 0;
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				val0 = getBytes(word).at(3);
+			}
+			if (Memory.find(add + 1) == Memory.end()) {
+				val1 = 0;
+			}
+			else {
+				int word = Memory.find(add + 1)->second;
+				val1 = getBytes(word).at(0) << 8;
+			}
+			int val = val0 + val1;
+			setRegister(inst.at(1), val);
+		}
+		else {
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				setRegister(inst.at(1), 0);
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				vector<unsigned char> bytes = getBytes(word);
+				int val = bytes.at(add % 4) + (bytes.at(add % 4) << 8);
+				setRegister(inst.at(1), val);
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+
+}
+
+void Simulator::executeLH(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		if (add % 4 != 0) {
+			int word0 = 0;
+			int word1 = 0;
+			vector<unsigned char> word0b, word1b;
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				word0 = 0;
+			}
+			else {
+				int word0 = Memory.find(add - (add % 4))->second;
+			}
+			if (Memory.find(add + 4 - (add%4)) == Memory.end()) {
+				word1 = 0;
+			}
+			else {
+				int word1 = Memory.find(add + 4 - (add%4))->second;
+			}
+			word0b = getBytes(word0);
+			word1b = getBytes(word1);
+
+			int val = 0;
+			int mod = 0;
+			for (int i = add % 4; i < add % 4 + 4; i++) {
+				if (i < 4) {
+					val += word0b[i] << (mod * 8);
+				}
+				else {
+					val += word1b[i] << (mod * 8);
+				}
+				mod++;
+			}
+			setRegister(inst.at(1), val);
+		}
+		else {
+			if (Memory.find(add) == Memory.end()) {
+				setRegister(inst.at(1), 0);
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				setRegister(inst.at(1), word);
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+
 }
