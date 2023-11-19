@@ -1,6 +1,8 @@
 #include "Simulator.h"
 #include <algorithm>
 #include <sstream>
+#include <vector>
+#include <iomanip>
 
 Simulator::Simulator(string i_file, string i_data)
 {
@@ -209,7 +211,49 @@ void Simulator::execute(vector<string> instruction)
 		//do ADD logic
 	}
 }
-
+string Simulator::DecToHex(int output)
+{
+	string hex;
+	for (int i = 0; output > 0; i++)
+	{
+		hex += to_string(output % 16);
+		output = output / 16;
+	}
+	return hex;
+}
+string Simulator::DecToBin(int output)
+{
+	string bin;
+	for (int i = 0; output >0 ; i++)
+	{
+		bin+= to_string( output % 2);
+		output = output / 2;
+	}
+	return bin;
+}
+void Simulator::output()
+{
+	cout << "The regisers values:" << endl;
+	cout << left << setw(16) << "Register's Name" << setw(18) << "Register's Number" << setw(40) << "Register's value in binary" << setw(25) << "Register's value in decimal" << setw(25) << "Register's value in hexadecimal" << endl;
+	cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
+	for (int i = 0; i < 32; i++)
+	{
+		cout << setw(16) << Regnames[i] << left << setw(18) << "x" + to_string(i) << setw(40) << DecToBin(Registers[i]) << setw(25) << Registers[i] << setw(25) << DecToHex(Registers[i]) << endl;
+	}
+	cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
+	if (Memory.empty())
+		cout << "There are no values stored in the memory";
+	else
+	{
+		cout << "The Memory values:" << endl;
+		cout << left << setw(16) << "Memory Address" << setw(40) << "Memory value in binary" << setw(25) << "Memory value in decimal" << setw(25) << "Memory value in hexadecimal" << endl;
+		cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
+		for (auto i : Memory)
+			cout << left << setw(16) << i.first << setw(40) << DecToBin(i.second) << setw(25) << i.second << setw(25) << DecToHex(i.second) << endl; 
+	}
+	cout << "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _" << endl;
+	cout << "The program counter: " << endl << PC << endl;;
+}
 void Simulator::setPC(unsigned int in)
 {
 	if (in < InitialPC) {

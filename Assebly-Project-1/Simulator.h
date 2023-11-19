@@ -7,12 +7,16 @@
 #include <vector>
 #include <map>
 #include <string>
+
 using namespace std;
 
 class Simulator
 {
 public:
 	Simulator(string i_file, string i_data);
+	void output();
+	string DecToHex(int output);
+	string DecToBin(int output);
 
 private:
 	void getInstructions();
