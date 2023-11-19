@@ -199,7 +199,11 @@ void Simulator::execInstructions()
 {
 	//Loop over all instructions
 	int instructionlen = instructions.size();
+	if (functions.find("Main") != functions.end()) {
+		setPC(functions.find("Main")->second);
+	}
 	int currentI = getRelevantPC();
+	output();
 	while(currentI < instructionlen) {
 		vector<string> instruction = instructions.at(currentI);
 		//check if terminating instruction
@@ -209,6 +213,13 @@ void Simulator::execInstructions()
 		}
 		//execute instruction
 		execute(instruction);
+		cout << "Executed Instruction: \n";
+		for (int i = 0; i < instruction.size(); i++) {
+			cout << instruction.at(i) << " ";
+		}
+		cout << endl << " Values after execution: \n";
+		output();
+		incrementPC();
 		currentI = getRelevantPC();
 	}
 }
