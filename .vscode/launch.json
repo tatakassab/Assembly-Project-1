@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "h:/My Drive/Fall 23/Assembly/Project 1",
-      "program": "h:/My Drive/Fall 23/Assembly/Project 1/build/Debug/outDebug",
+      "cwd": "h:/My Drive/Fall 23/Assembly/Assembly-Project-1",
+      "program": "h:/My Drive/Fall 23/Assembly/Assembly-Project-1/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
