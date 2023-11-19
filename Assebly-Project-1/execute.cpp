@@ -68,6 +68,20 @@ void executeJALR(instruction inst){
         PC = inst.imm + registers[inst.rs1] - 4;
 }
 
+void executeMUL(Instruction inst) {
+    registers[inst.rd] = registers[inst.rs1] * registers[inst.rs2];
+}
+
+void executeDIV(Instruction inst) {
+    if (registers[inst.rs2] != 0) {
+        registers[inst.rd] = registers[inst.rs1] / registers[inst.rs2];
+    } else {
+        // Handle division by zero error
+        std::cerr << "Error: Division by zero" << std::endl;
+        exit(1);
+    }
+}
+
 void executeBEQ(instruction inst){
      if(labelMap.find(inst.label) == labelMap.end())
         {
@@ -589,6 +603,21 @@ void executeLHU(instruction inst){
     }
 }
 
+void executeMULH(Instruction inst) {
+    int32_t result = static_cast<int32_t>((int64_t(a) * int64_t(b)) >> 32);
+    registers[inst.rd] = result;
+}
+
+void executeMULHSU(Instruction inst) {
+    int32_t result = static_cast<int32_t>((int64_t(a) * int64_t(b)) >> 32);
+    registers[inst.rd] = result;
+}
+
+void executeMULHU(Instruction inst) {
+    uint32_t result = static_cast<uint32_t>((uint64_t(a) * uint64_t(b)) >> 32);
+    registers[inst.rd] = result;
+}
+
 void executeLBU(instruction inst){
     if ( inst.rd == 0 )
     {
@@ -794,5 +823,11 @@ void execute(vector<string> instruction)
     if (inst.name == "ebreak") 
     {
        executeEBREAK(inst);
+    }
+    if( inst.name == "mul"){
+        executeMUL(inst);
+    }
+    if( inst.name == "div"){
+        executeDIV(inst);
     }
 }
