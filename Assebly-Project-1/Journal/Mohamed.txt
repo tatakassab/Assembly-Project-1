@@ -1,0 +1,21 @@
+November 12, 1:00PM: Began the implementation of the execute function in the RISC-V simulator. The initial version included support for basic instructions such as LUI, AUIPC, JAL, JALR, and various conditional branches (BEQ, BNE, BLT, BGE, BLTU, BGEU). Tested the initial version with simple programs to ensure correct execution and identified areas for improvement.
+
+November 12, 3:30PM: Expanded the execute function to include instructions for loading and storing data (LB, LH, LW, LBU, LHU, SB, SH, SW). Developed functions to handle memory operations, considering stack pointer adjustments and data retrieval. Conducted thorough testing to validate the correctness of the implemented instructions.
+
+November 13, 10:00AM: Added arithmetic and logical instructions to the execute function, covering a range of operations such as addition, subtraction, bitwise AND/OR/XOR, shifts, and set less than (SLT, SLTU). Ensured proper handling of immediate values and register operands. Ran extensive tests to verify the accuracy of the arithmetic and logical instructions.
+
+November 14, 2:00PM: Integrated support for immediate arithmetic and logical instructions (ADDI, SLTI, SLTIU, XORI, ORI, ANDI) into the execute function. Implemented shift instructions (SLLI, SRLI, SRAI) to handle logical and arithmetic right shifts. Conducted testing to confirm the correct behavior of these instructions.
+
+November 15, 11:30AM: Introduced the execute function to the world of multiplication and division instructions. Added support for MUL, DIV, and REM instructions, covering signed and unsigned multiplication, division, and remainder operations. Ensured proper handling of edge cases and ran comprehensive tests.
+
+November 16, 3:45PM: Optimized the execute function to enhance performance and minimize redundancy. Reviewed the codebase for consistency and adherence to coding standards. Updated comments and documentation to improve clarity and provide insights into the functionality of the execute function.
+
+November 17, 1:00PM: Conducted a thorough code review, addressing any identified issues and ensuring the maintainability of the execute function. Prepared the groundwork for future extensions or modifications to accommodate additional RISC-V instructions.
+
+November 18, 9:00AM: Received feedback from peers and made necessary adjustments to the execute function based on the review. Checked for memory leaks and runtime errors, ensuring the stability of the simulator.
+
+November 19, 2:30PM: Implemented support for additional multiplication instructions, including MULH, MULHU, and MULHSU. Conducted rigorous testing to validate the correctness of these new instructions and their integration with the existing codebase.
+
+November 19, 4:00PM: Conducted final testing of the execute function, covering the entire spectrum of RISC-V instructions. Updated documentation to reflect the changes made, ensuring comprehensive and clear guidance for future development.
+
+November 19, 6:00PM: Commited the final changes to version control, marking the completion of the execute function. The RISC-V simulator is now equipped to handle a broad range of instructions, providing a solid foundation for further development and experimentation.
