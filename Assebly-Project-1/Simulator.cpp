@@ -212,7 +212,7 @@ void Simulator::execInstructions()
 		currentI = getRelevantPC();
 	}
 }
-string DecToHex(int output)
+string Simulator::DecToHex(int output)
 {
 	string hex;
 	for (int i = 0; output > 0; i++)
@@ -238,7 +238,7 @@ string DecToHex(int output)
 	reverse(hex.begin(), hex.end());
 	return hex;
 }
-string DecToBin(int output)
+string Simulator::DecToBin(int output)
 {
 	string bin;
 	for (int i = 0; output > 0; i++)
@@ -426,13 +426,20 @@ bool Simulator::isFunc(string in)
 vector<unsigned char> Simulator::getBytes(int n) {
 	vector<unsigned char> bytes(4);
 
-	bytes[0] = (n >> 24) & 0xFF;
-	bytes[1] = (n >> 16) & 0xFF;
-	bytes[2] = (n >> 8) & 0xFF;
-	bytes[3] = (n >> 0) & 0xFF;
+	bytes[3] = (n >> 24) & 0xFF;
+	bytes[2] = (n >> 16) & 0xFF;
+	bytes[1] = (n >> 8) & 0xFF;
+	bytes[0] = (n >> 0) & 0xFF;
 	return bytes;
 }
-
+int Simulator::getInt(vector<unsigned char> bytes) {
+	int i = 0;
+	i += bytes[0];
+	i += bytes[1] << 8;
+	i += bytes[2] << 16;
+	i += bytes[3] << 24;
+	return i;
+}
 void Simulator::execute(vector<string> inst)
 {
 	//instruction: This is an array of words having one instruction, all of them are Upper Case
@@ -720,7 +727,7 @@ void Simulator::executeBGEU(vector<string> inst) {
 	}
 }
 
-void Simulator::executeLB(vector<string> inst) {
+void Simulator::executeLBU(vector<string> inst) {
 	try
 	{
 		int imm = stoi(inst.at(2));
@@ -730,7 +737,7 @@ void Simulator::executeLB(vector<string> inst) {
 		}
 		else {
 			int word = Memory.find(add - (add % 4))->second;
-			int byte = getBytes(word).at(add % 4);
+			unsigned int byte = getBytes(word).at(add % 4);
 			setRegister(inst.at(1), byte);
 		}
 	}
@@ -741,14 +748,14 @@ void Simulator::executeLB(vector<string> inst) {
 	
 }
 
-void Simulator::executeLH(vector<string> inst) {
+void Simulator::executeLHU(vector<string> inst) {
 	try
 	{
 		int imm = stoi(inst.at(2));
 		unsigned int add = imm + getRegister(inst.at(3));
 		if (add % 4 == 3) {
-			int val0 = 0;
-			int val1 = 0;
+			unsigned int val0 = 0;
+			unsigned int val1 = 0;
 			if (Memory.find(add - (add % 4)) == Memory.end()) {
 				val0 = 0;
 			}
@@ -763,7 +770,7 @@ void Simulator::executeLH(vector<string> inst) {
 				int word = Memory.find(add + 1)->second;
 				val1 = getBytes(word).at(0) << 8;
 			}
-			int val = val0 + val1;
+			unsigned int val = val0 + val1;
 			setRegister(inst.at(1), val);
 		}
 		else {
@@ -773,7 +780,7 @@ void Simulator::executeLH(vector<string> inst) {
 			else {
 				int word = Memory.find(add - (add % 4))->second;
 				vector<unsigned char> bytes = getBytes(word);
-				int val = bytes.at(add % 4) + (bytes.at(add % 4) << 8);
+				unsigned int val = bytes.at(add % 4) + (bytes.at(add % 4) << 8);
 				setRegister(inst.at(1), val);
 			}
 		}
@@ -785,7 +792,7 @@ void Simulator::executeLH(vector<string> inst) {
 
 }
 
-void Simulator::executeLH(vector<string> inst) {
+void Simulator::executeLW(vector<string> inst) {
 	try
 	{
 		int imm = stoi(inst.at(2));
@@ -816,7 +823,7 @@ void Simulator::executeLH(vector<string> inst) {
 					val += word0b[i] << (mod * 8);
 				}
 				else {
-					val += word1b[i] << (mod * 8);
+					val += word1b[i-4] << (mod * 8);
 				}
 				mod++;
 			}
@@ -829,6 +836,373 @@ void Simulator::executeLH(vector<string> inst) {
 			else {
 				int word = Memory.find(add - (add % 4))->second;
 				setRegister(inst.at(1), word);
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+
+}
+
+void Simulator::executeSB(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		unsigned int val = getRegister(inst.at(1)) & 0x000000FF;
+		if (Memory.find(add - (add % 4)) == Memory.end()) {
+			val = val << ((add % 4) * 8);
+			Memory.insert(pair<unsigned int, int>(add - (add % 4), val));
+		}
+		else {
+			int word = Memory.find(add - (add % 4))->second;
+			vector<unsigned char> wordb = getBytes(word);
+			wordb[add % 4] = val;
+			word = getInt(wordb);
+			Memory.insert(pair<unsigned int, int>(add - (add % 4), word));
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+}
+
+void Simulator::executeSH(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		unsigned int val = getRegister(inst.at(1)) & 0x0000FFFF;
+		if (add % 4 == 3) {
+			int word0 = 0;
+			int word1 = 0;
+			vector<unsigned char> word0b, word1b;
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				word0 = 0;
+			}
+			else {
+				int word0 = Memory.find(add - (add % 4))->second;
+			}
+			if (Memory.find(add + 4 - (add % 4)) == Memory.end()) {
+				word1 = 0;
+			}
+			else {
+				int word1 = Memory.find(add + 4 - (add % 4))->second;
+			}
+			word0b = getBytes(word0);
+			word1b = getBytes(word1);
+			vector<unsigned char> valb = getBytes(val);
+			word0b[3] = valb[0];
+			word1b[0] = valb[1];
+			Memory.insert(pair<unsigned int, int>(add - (add % 4), getInt(word0b)));
+			Memory.insert(pair<unsigned int, int>(add + 4 - (add % 4), getInt(word1b)));
+		}
+		else {
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				val = val << ((add % 4) * 8);
+				Memory.insert(pair<unsigned int, int>(add - (add % 4), val));
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				vector<unsigned char> wordb = getBytes(word);
+				vector<unsigned char> valb = getBytes(val);
+				wordb[add % 4] = valb[0];
+				wordb[(add % 4)+1] = valb[1];
+				word = getInt(wordb);
+				Memory.insert(pair<unsigned int, int>(add - (add % 4), word));
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+}
+
+void Simulator::executeSW(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		unsigned int val = getRegister(inst.at(1));
+		if (add % 4 != 0) {
+			int word0 = 0;
+			int word1 = 0;
+			vector<unsigned char> word0b, word1b;
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				word0 = 0;
+			}
+			else {
+				int word0 = Memory.find(add - (add % 4))->second;
+			}
+			if (Memory.find(add + 4 - (add % 4)) == Memory.end()) {
+				word1 = 0;
+			}
+			else {
+				int word1 = Memory.find(add + 4 - (add % 4))->second;
+			}
+			word0b = getBytes(word0);
+			word1b = getBytes(word1);
+			vector<unsigned char> valb = getBytes(val);
+			for (int i = add % 4; i < (add % 4) + 4; i++) {
+				if (i < 4) {
+					word0b[i] = valb[i - (add % 4)];
+				}
+				else {
+					word1b[i-4] = valb[i - (add % 4)];
+				}
+			}
+			Memory.insert(pair<unsigned int, int>(add - (add % 4), getInt(word0b)));
+			Memory.insert(pair<unsigned int, int>(add + 4 - (add % 4), getInt(word1b)));
+		}
+		else {
+			Memory.insert(pair<unsigned int, int>(add, val));
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+}
+
+void Simulator::executeSLTI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		if (getRegister(inst.at(2)) < imm)
+		{
+			setRegister(inst.at(1),1);   // set rd = 1 if rs1 less than imm
+		}
+		else
+		{
+			setRegister(inst.at(1), 0);
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeSLTIU(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		if ((unsigned int)getRegister(inst.at(2)) < imm)
+		{
+			setRegister(inst.at(1), 1);   // set rd = 1 if rs1 less than imm
+		}
+		else
+		{
+			setRegister(inst.at(1), 0);
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeADDI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), imm + getRegister(inst.at(2)));
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeORI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), imm | getRegister(inst.at(2)));
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeXORI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), imm ^ getRegister(inst.at(2)));
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeANDI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), imm & getRegister(inst.at(2)));
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+void Simulator::executeSLLI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), getRegister(inst.at(2)) << imm);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeSRLI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), (unsigned int)(getRegister(inst.at(2))) >> imm);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeSRAI(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(3));
+		setRegister(inst.at(1), getRegister(inst.at(2)) >> imm);
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediate");
+	}
+}
+
+void Simulator::executeADD(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) + getRegister(inst.at(3)));
+}
+
+void Simulator::executeSUB(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) - getRegister(inst.at(3)));
+}
+
+void Simulator::executeSLL(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) << getRegister(inst.at(3)));
+}
+
+void Simulator::executeSLT(vector<string> inst) {
+	if (getRegister(inst.at(2)) < getRegister(inst.at(3))) {
+		setRegister(inst.at(1), 1);
+	}
+	else {
+		setRegister(inst.at(1), 0);
+	}
+}
+
+void Simulator::executeSLTU(vector<string> inst) {
+	if ((unsigned int)getRegister(inst.at(2)) < (unsigned int)getRegister(inst.at(3))) {
+		setRegister(inst.at(1), 1);
+	}
+	else {
+		setRegister(inst.at(1), 0);
+	}
+}
+
+void Simulator::executeXOR(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) ^ getRegister(inst.at(3)));
+}
+
+void Simulator::executeSRL(vector<string> inst) {
+	setRegister(inst.at(1), (unsigned int)getRegister(inst.at(2)) >> getRegister(inst.at(3)));
+}
+
+void Simulator::executeSRA(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) >> getRegister(inst.at(3)));
+}
+
+void Simulator::executeOR(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) | getRegister(inst.at(3)));
+}
+
+void Simulator::executeAND(vector<string> inst) {
+	setRegister(inst.at(1), getRegister(inst.at(2)) & getRegister(inst.at(3)));
+}
+
+void Simulator::executeLB(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		if (Memory.find(add - (add % 4)) == Memory.end()) {
+			setRegister(inst.at(1), 0);
+		}
+		else {
+			int word = Memory.find(add - (add % 4))->second;
+			unsigned int byte = getBytes(word).at(add % 4);
+			if (byte >> 7 == 1) {
+				byte += 0xFFFFFF00;
+			}
+			setRegister(inst.at(1), byte);
+		}
+	}
+	catch (const std::exception&)
+	{
+		returnError("Invalid Immediat");
+	}
+
+}
+
+void Simulator::executeLH(vector<string> inst) {
+	try
+	{
+		int imm = stoi(inst.at(2));
+		unsigned int add = imm + getRegister(inst.at(3));
+		if (add % 4 == 3) {
+			unsigned int val0 = 0;
+			unsigned int val1 = 0;
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				val0 = 0;
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				val0 = getBytes(word).at(3);
+			}
+			if (Memory.find(add + 1) == Memory.end()) {
+				val1 = 0;
+			}
+			else {
+				int word = Memory.find(add + 1)->second;
+				val1 = getBytes(word).at(0) << 8;
+			}
+			unsigned int val = val0 + val1;
+			if (val >> 15 == 1) {
+				val += 0xFFFF0000;
+			}
+			setRegister(inst.at(1), val);
+		}
+		else {
+			if (Memory.find(add - (add % 4)) == Memory.end()) {
+				setRegister(inst.at(1), 0);
+			}
+			else {
+				int word = Memory.find(add - (add % 4))->second;
+				vector<unsigned char> bytes = getBytes(word);
+				unsigned int val = bytes.at(add % 4) + (bytes.at(add % 4) << 8);
+				if (val >> 15 == 1) {
+					val += 0xFFFF0000;
+				}
+				setRegister(inst.at(1), val);
 			}
 		}
 	}

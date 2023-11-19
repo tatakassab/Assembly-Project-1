@@ -15,8 +15,6 @@ class Simulator
 public:
 	Simulator(string i_file, string i_data);
 	void output();
-	string DecToHex(int output);
-	string DecToBin(int output);
 
 private:
 	void getInstructions();
@@ -30,6 +28,8 @@ private:
 	void setRegister(string, int); //takes in a string X1, or T1
 	int getRegister(string); //takes in a string X1, or $1, or $t1
 	void returnError(string); //Error handling
+	string DecToHex(int output);
+	string DecToBin(int output);
 	unsigned int PC;
 	unsigned int InitialPC;
 	map<unsigned int, int> Memory;
@@ -53,6 +53,7 @@ private:
 	unsigned int stack_upper = 8912896; //0x880000
 	unsigned int stack_lower = 8388608; //0x800000
 	vector<unsigned char> getBytes(int);
+	int getInt(vector<unsigned char>);
 
 	//Instructions
 	int binaryToDecimal(string binary);
