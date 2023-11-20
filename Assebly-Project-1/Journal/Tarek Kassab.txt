@@ -1,0 +1,3 @@
+November 15, 12:23AM: Added logic from taking input until executing the instruction
+November 19, 6:15 AM: Added validation, fixed bugs for the program execution.
+November 20, 6:30 AM: Re-Refactored the instruction code into the program to make them work together, added RV32M instructions, tested the program, fixed numerous bugs, and rewrote some test cases.

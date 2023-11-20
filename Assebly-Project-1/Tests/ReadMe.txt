@@ -1,0 +1,1 @@
+Rename the test document to instruction.txt and copy it to the source code path to initiate the test
