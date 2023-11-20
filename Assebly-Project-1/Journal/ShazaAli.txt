@@ -1,0 +1,10 @@
+
+November 16, 9:00AM: Commited the function that produces stimulator output.
+
+November 19, 7:20PM: wrote the c programs for each set of test cases.
+
+November 18, 5:13PM: Implemented and Commited the conversion functions.
+
+November 19, 7:20PM: Commited the first set of test cases.
+
+November 19, 11:34PM: Committed the final set of test cases with their c code.
