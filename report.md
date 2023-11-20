@@ -25,6 +25,8 @@ Our RISC-V simulator is designed to simulate the behavior of a RISC-V instructio
 4. **Error Handling:**
    - Decision: Implement error-checking mechanisms for invalid instructions, memory access violations, or other exceptional conditions.
    - Reasoning: Robust error handling improves the simulator's reliability and aids in debugging.
+5. **Bonus Features**
+   - We Chose to implement RV32IM and output the results in decimal, binary, and hexadecimal as our bonuses.
 
 
 ### Assumptions:
@@ -40,10 +42,6 @@ Our RISC-V simulator is designed to simulate the behavior of a RISC-V instructio
 3. **Single-Threaded Execution:**
    - Assumption: The simulator assumes single-threaded execution and does not handle multi-threading or parallelism.
    - Reasoning: Simplifying the simulator to a single-threaded model reduces complexity and is suitable for many educational or introductory purposes.
-
-4. **Static Memory Allocation:**
-   - Assumption: Memory allocation is static, and there is no support for dynamic memory management (e.g., malloc/free).
-   - Reasoning: Dynamic memory management adds complexity, and a focus on static allocation aligns with the simplicity often desired in simulators.
 
 
 ### 3. Known Bugs or Issues
@@ -77,22 +75,509 @@ To mitigate instruction execution bugs, a thorough review of the execution logic
 #### Compilation:
 1. Clone the repository from [GitHub URL].
 2. Navigate to the project directory.
-3. Add your instructions.txt and data.txt files in the main directory
-4. Run the file simulator.cpp
-5. Open the terminal
+3. Add your instructions.txt and data.txt files in the main directory (or rename the test instructions to instruction.txt)
+4. Run the file main.cpp
    ```
 
 
 ### 5. Simulated Programs
-
+To initiate one of these tests, please rename its text file to "instructions" only, deleting the testx part in the name. By default, there is an empty instruction.txt available if you want to add your own assembly code in it. While these programs don't use preloaded data, the functionality is available and to showcase that there are some generic data values in the data.txt document.
 1. **Program 1: Basic Arithmetic and Logic**
    - A program that covers basic arithmetic (addition, subtraction), logical (AND, OR, XOR), and immediate instructions.
+   Program 1 logic 
+      C++:
+      int ComputeLogic(int logic,  int n, unsigned int m)
+      {
+         int result;
+            if( logic == 0) //xori
+               result= n^1;
+            else if(logic == 1 )// "sll"
+               result= n<<m;
+            else if (logic == 2 )// "slli"
+               result= n<<1;
+            else if (logic == 3) //"srl"
+               result= n/m;
+            else if (logic == 4) //"srli"
+               result= n/2;
+            else if (logic == 5) //"sra"
+               result= n>>m;
+            else if (logic == 6 ) //"srai"
+               result= n>>1;
+            else if(logic == 7) //"and"
+               result= n&m;
+            else if (logic == 8) //"andi"
+               result= n&1;
+            else if (logic == 9) //"or"
+               result= n|m;
+            else if (logic == 10 ) //"ori"
+               result= n|1;
+            else if (logic ==11 ) //"xor"
+               result= n^m;
+         return result;
+
+
+      }
+
+
+      int main()
+      {
+         int n=1;
+         int m=0;
+      ComputeLogic(0, n,m);
+      ComputeLogic(10,n, m);
+      ComputeLogic(9,n, m);
+      ComputeLogic(8, n, m);
+      ComputeLogic(7,  n, m);
+      ComputeLogic(6,  n,  m);
+      ComputeLogic(5, n, m);
+      ComputeLogic(4,  n, m);
+      ComputeLogic(3, n, m);
+      ComputeLogic(2,  n, m);
+      ComputeLogic(1, n, m);
+      ComputeLogic(11, n, m);
+      return 0;
+      }
+
+
+      Assembly:
+      main:
+      addi a1,zero,1
+      addi a2,zero,0
+      addi a0,zero,0
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,10
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,9
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,8
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,7
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,6
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,5
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,4
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,3
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,2
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,1
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,11
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      ebreak
+
+
+      ComputeLogic:
+      beq a0,zero,f0
+      addi t0,zero,1
+      beq a0,t0,f1
+      addi t0,t0,1
+      beq a0,t0,f2
+      addi t0,t0,1
+      beq a0,t0,f3
+      addi t0,t0,1
+      beq a0,t0,f4
+      addi t0,t0,1
+      beq a0,t0,f5
+      addi t0,t0,1
+      beq a0,t0,f6
+      addi t0,t0,1
+      beq a0,t0,f7
+      addi t0,t0,1
+      beq a0,t0,f8
+      addi t0,t0,1
+      beq a0,t0,f9
+      addi t0,t0,1
+      beq a0,t0,f10
+      addi t0,t0,1
+      beq a0,t0,f11
+
+
+      f0:
+      xori a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f1:
+      sll a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f2:
+      slli a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f3:
+      srl a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f4:
+      srli a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f5:
+      sra a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f6:
+      srai a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f7:
+      and a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f8:
+      andi a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f9:
+      or a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f10:
+      ori a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f11:
+      xor a0, a1, a2
+      jalr zero,0(ra)
+
 
 2. **Program 2: Memory Access and Branching**
    - This program involves memory access (load and store instructions) and conditional branching.
+         C++:
+            int ComputeComp(int comp,  int n,int m, unsigned int u1,unsigned int u2)
+            {
+               int result;
+                  if( comp == 0) //beq
+                     if(n==m)result= 1;
+                  else if(comp == 1 )// "bne"
+                     if(n!=m) result= 1;
+                  else if(comp == 2 )// "blt"
+                     if(n>m) result= 1;
+                  else if(comp == 3 )// "bltu"
+                     if(u2<u1) result= 1;
+                  else if(comp == 4 )// "bgeu"
+                     if(u2>=u1) result= 1;
+
+
+                  else if(comp == 5 )// "bge"
+                     if(m>=n) result= 1;
+
+
+                  else if(comp == 6)// "slt"
+                     result= n<m;
+
+
+                  else if(comp == 7 )// "slti"
+                     result= n<-1;
+
+
+                  else if(comp == 8)// "sltu"
+                     result= n<u1;
+
+
+                  else if(comp == 9 )// "sltui"
+                     result= n<m;
+
+
+
+
+
+
+               return result;
+
+
+            }
+
+
+            int main()
+            {
+               int n=1;
+               int m=0;
+               int u1=0;
+               int u2=1;
+            ComputeLogic(0, n,m,u1,u2);
+            ComputeLogic(9,n, m,u1,u2);
+            ComputeLogic(8, n, m,u1,u2);
+            ComputeLogic(7,  n, m,u1,u2);
+            ComputeLogic(6,  n,  m,u1,u2);
+            ComputeLogic(5, n, m,u1,u2);
+            ComputeLogic(4,  n, m,u1,u2);
+            ComputeLogic(3, n, m,u1,u2);
+            ComputeLogic(2,  n, m,u1,u2);
+            ComputeLogic(1, n, m,u1,u2);
+            exit(0);
+            }
+
+
+            Assembly 
+
+            ComputeLogic:
+                  addi    sp,sp,-64
+                  sw      s0,60(sp)
+                  addi    s0,sp,64
+                  sw      a0,-36(s0)
+                  sw      a1,-40(s0)
+                  sw      a2,-44(s0)
+                  sw      a3,-48(s0)
+                  sw      a4,-52(s0)
+                  lw      a5,-36(s0)
+                  bne     a5,zero,.L2
+                  lw      a4,-40(s0)
+                  lw      a5,-44(s0)
+                  bne     a4,a5,.L3
+                  addi    a5,zero,1
+                  sw      a5,-20(s0)
+                  jal        ra,.L2
+            .L3:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,1
+                  bne     a4,a5,.L2
+                  lw      a4,-40(s0)
+                  lw      a5,-44(s0)
+                  beq     a4,a5,.L4
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L4:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,2
+                  bne     a4,a5,.L2
+                  lw      a4,-40(s0)
+                  lw      a5,-44(s0)
+                  bge     a5,a4,.L5
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L5:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,3
+                  bne     a4,a5,.L2
+                  lw      a4,-52(s0)
+                  lw      a5,-48(s0)
+                  bgeu    a4,a5,.L6
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L6:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,4
+                  bne     a4,a5,.L2
+                  lw      a4,-52(s0)
+                  lw      a5,-48(s0)
+                  bltu    a4,a5,.L7
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L7:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,5
+                  bne     a4,a5,.L2
+                  lw      a4,-44(s0)
+                  lw      a5,-40(s0)
+                  blt     a4,a5,.L8
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L8:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,6
+                  bne     a4,a5,.L9
+                  lw      a4,-40(s0)
+                  lw      a5,-44(s0)
+                  slt     a5,a4,a5
+                  andi    a5,a5,255
+                  sw      a5,-20(s0)
+                  jal       ra,.L2
+            .L9:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,7
+                  bne     a4,a5,.L10
+                  lw      a5,-40(s0)
+                  slti    a5,a5,-1
+                  andi    a5,a5,255
+                  sw      a5,-20(s0)
+                  jal      ra,.L2
+            .L10:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,8
+                  bne     a4,a5,.L11
+                  lw      a5,-40(s0)
+                  lw      a4,-48(s0)
+                  sltu   a5,a5,a4
+                  andi    a5,a5,255
+                  sw      a5,-20(s0)
+                  jal      ra,.L2
+            .L11:
+                  lw      a4,-36(s0)
+                  addi      a5,zero,9
+                  bne     a4,a5,.L2
+                  lw      a4,-40(s0)
+                  lw      a5,-44(s0)
+                  slt     a5,a4,a5
+                  andi    a5,a5,255
+                  sw      a5,-20(s0)
+            .L2:
+                  lw      a5,-20(s0)
+                  addi     a0,a5,0
+                  lw      s0,60(sp)
+                  addi    sp,sp,64
+                  jalr     x0, 0(ra)
+            main:
+                  addi    sp,sp,-32
+                  sw      ra,28(sp)
+                  sw      s0,24(sp)
+                  addi    s0,sp,32
+                  addi      a5,zero,1
+                  sw      a5,-20(s0)
+                  sw      zero,-24(s0)
+                  sw      zero,-28(s0)
+                  addi      a5,zero,1
+                  sw      a5,-32(s0)
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,0
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,9
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,8
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,7
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,6
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,5
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,4
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,3
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,2
+                  jal    ra,    ComputeLogic
+                  lw      a4,-32(s0)
+                  lw      a3,-28(s0)
+                  lw      a2,-24(s0)
+                  lw      a1,-20(s0)
+                  addi      a0,zero,1
+                  jal    ra,    ComputeLogic
+                  addi      a0,zero,0
+                  ecall
 
 3. **Program 3: Looping Structure**
    - A program that includes a loop, demonstrating the capability of the simulator to handle iterative structures.
+   C++:
+      unsigned int factorial(unsigned int x)
+      {
+         if ( x== 0)
+            return 1;
+         return x * factorial(x - 1);
+      }
+      
+      int main()
+      {
+         int x = 5;
+         int result= factorial(x);
+      }
+
+   Assembly:
+      fact:       
+         addi  sp, sp, -8    
+         sw ra, 0(sp)    
+         addi t0, zero, 2
+         blt a0, t0, ret_one 
+         sw a0, 4(sp)    
+         addi a0, a0, -1
+         jal ra, fact       
+         lw t0, 4(sp)    
+         mul a0, t0, a0 
+         beq zero,zero,done
+      ret_one:
+         addi a0, zero, 1
+      done:
+         lw ra, 0(sp)
+         addi sp, sp, 8
+         jalr zero,0(ra)
+
+      main:
+         addi a0,zero, 5
+         jal ra,fact
+         addi a1, zero, 96
+         sw a0,0(a1)
+         fence
+
+
 
 ### Conclusion:
 

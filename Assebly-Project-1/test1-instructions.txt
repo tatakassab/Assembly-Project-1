@@ -1,0 +1,139 @@
+1000
+main:
+      addi a1,zero,1
+      addi a2,zero,0
+      addi a0,zero,0
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,10
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,9
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,8
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,7
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,6
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,5
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,4
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,3
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,2
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,1
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      addi a0,zero,11
+      jal ra,ComputeLogic
+      addi sp,sp,-4
+      sw a0,0(sp)
+      ebreak
+
+
+      ComputeLogic:
+      beq a0,zero,f0
+      addi t0,zero,1
+      beq a0,t0,f1
+      addi t0,t0,1
+      beq a0,t0,f2
+      addi t0,t0,1
+      beq a0,t0,f3
+      addi t0,t0,1
+      beq a0,t0,f4
+      addi t0,t0,1
+      beq a0,t0,f5
+      addi t0,t0,1
+      beq a0,t0,f6
+      addi t0,t0,1
+      beq a0,t0,f7
+      addi t0,t0,1
+      beq a0,t0,f8
+      addi t0,t0,1
+      beq a0,t0,f9
+      addi t0,t0,1
+      beq a0,t0,f10
+      addi t0,t0,1
+      beq a0,t0,f11
+
+
+      f0:
+      xori a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f1:
+      sll a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f2:
+      slli a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f3:
+      srl a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f4:
+      srli a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f5:
+      sra a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f6:
+      srai a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f7:
+      and a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f8:
+      andi a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f9:
+      or a0, a1, a2
+      jalr zero,0(ra)
+
+
+      f10:
+      ori a0, a1, 1
+      jalr zero,0(ra)
+
+
+      f11:
+      xor a0, a1, a2
+      jalr zero,0(ra)

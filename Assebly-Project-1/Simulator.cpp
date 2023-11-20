@@ -48,8 +48,11 @@ void Simulator::getInstructions()
 		input.open(data);
 	
 		//Gets Data
-		while (getline(input, line));
+		while (getline(input, line))
 		{
+			if (line == "") {
+				continue;
+			}
 			int split = line.find(',');
 			try
 			{
@@ -96,7 +99,7 @@ bool Simulator::validate()
 	//set PC
 	try
 	{
-		setPC(stoi(rawInstructions.at(0)));
+		PC =stoi(rawInstructions.at(0));
 		InitialPC = stoi(rawInstructions.at(0));
 		if (InitialPC < 0)
 		{
@@ -116,26 +119,26 @@ bool Simulator::validate()
 
 	for (int i = 1; i < len; i++) {
 		string currentInt = rawInstructions.at(i);
-		if (currentInt.find(',') == string::npos) {
+		if (currentInt.find(':') != string::npos) {
 			currentInt.erase(remove_if(currentInt.begin(), currentInt.end(), isspace), currentInt.end());
 			if (currentInt[currentInt.length() - 1] != ':') {
-				returnError("Syntax Error at line " + (i + 1));
+				returnError("Syntax Error at line " + to_string(i + 1));
 				return false;
 			}
 			else {
-				currentInt.erase(currentInt.size() - 1);
+				currentInt.erase(currentInt.end() - 1, currentInt.end());
 				transform(currentInt.begin(), currentInt.end(), currentInt.begin(), ::toupper);
-				functions.insert(pair<string, unsigned int>(currentInt, getPC() + instructions.size()));
+				functions.insert(pair<string, unsigned int>(currentInt, getPC() + (instructions.size()*4)));
 			}
 		}
 		else {
 
 			//turn all to uppercase, remove commas and put it in a vector of words
 			transform(currentInt.begin(), currentInt.end(), currentInt.begin(), ::toupper);
-			currentInt.replace(currentInt.begin(), currentInt.end(), ',', ' ');
-			currentInt.replace(currentInt.begin(), currentInt.end(), '(', ' ');
-			currentInt.replace(currentInt.begin(), currentInt.end(), ')', ' ');
-			currentInt.replace(currentInt.begin(), currentInt.end(), ';', ' ');
+			replace(currentInt.begin(), currentInt.end(), ',', ' ');
+			replace(currentInt.begin(), currentInt.end(), '(', ' ');
+			replace(currentInt.begin(), currentInt.end(), ')', ' ');
+			replace(currentInt.begin(), currentInt.end(), ';', ' ');
 			istringstream inst(currentInt);
 			string word;
 			vector<string> instruction;
@@ -147,44 +150,50 @@ bool Simulator::validate()
 			}
 
 			//validate instruction
-			if (find(UType.begin(), UType.end(), instruction.at(0)) != UType.end()) {
+			if (instruction.at(0) == "JAL") {
+				if (!(instruction.size() == 3 && isReg(instruction.at(1)))) {
+					returnError("Syntax Error at line " + to_string(i + 1));
+					return false;
+				}
+			}
+			else if (find(UType.begin(), UType.end(), instruction.at(0)) != UType.end()) {
 				if (!(instruction.size() == 3 && isReg(instruction.at(1)) && isInt(instruction.at(2)))) {
-					returnError("Syntax Error at " + (i + 1));
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (find(OffsetIType.begin(), OffsetIType.end(), instruction.at(0)) != OffsetIType.end()) {
 				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isInt(instruction.at(2)) && isReg(instruction.at(3)))) {
-					returnError("Syntax Error at " + (i + 1));
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (find(IType.begin(), IType.end(), instruction.at(0)) != IType.end()) {
 				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isReg(instruction.at(2)) && isInt(instruction.at(3)))) {
-					returnError("Syntax Error at " + (i + 1));
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (find(SType.begin(), SType.end(), instruction.at(0)) != SType.end()) {
 				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isInt(instruction.at(2)) && isReg(instruction.at(3)))) {
-					returnError("Syntax Error at " + (i + 1));
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (find(SBType.begin(), SBType.end(), instruction.at(0)) != SBType.end()) {
-				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isReg(instruction.at(2)) && isFunc(instruction.at(3)))) {
-					returnError("Syntax Error at " + (i + 1));
+				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isReg(instruction.at(2)))) {
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (find(RType.begin(), RType.end(), instruction.at(0)) != RType.end()) {
 				if (!(instruction.size() == 4 && isReg(instruction.at(1)) && isReg(instruction.at(2)) && isReg(instruction.at(3)))) {
-					returnError("Syntax Error at " + (i + 1));
+					returnError("Syntax Error at line " + to_string(i + 1));
 					return false;
 				}
 			}
 			else if (!(instruction.at(0) == "ECALL" || instruction.at(0) == "EBREAK" || instruction.at(0) == "FENCE")) {
-				returnError("Instruction not supported at " + (i + 1));
+				returnError("Instruction not supported at line " + to_string(i + 1));
 				return false;
 			}
 
@@ -199,8 +208,8 @@ void Simulator::execInstructions()
 {
 	//Loop over all instructions
 	int instructionlen = instructions.size();
-	if (functions.find("Main") != functions.end()) {
-		setPC(functions.find("Main")->second);
+	if (functions.find("MAIN") != functions.end()) {
+		setPC(functions.find("MAIN")->second);
 	}
 	int currentI = getRelevantPC();
 	output();
@@ -285,7 +294,7 @@ void Simulator::output()
 }
 void Simulator::setPC(unsigned int in)
 {
-	if (in < InitialPC) {
+	if (in < InitialPC - 4) {
 		returnError("PC is trying to access restricted address");
 		return;
 	}
@@ -695,7 +704,7 @@ void Simulator::executeJALR(vector<string> inst) {
 	try
 	{
 		int imm = stoi(inst.at(2));
-		setRegister(inst.at(1), imm + getRegister(inst.at(3)));
+		setRegister(inst.at(1), imm + getRegister(inst.at(3)) + 4);
 		setPC(imm + getRegister(inst.at(3)) - 4);
 	}
 	catch (const std::exception&)

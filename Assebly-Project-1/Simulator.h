@@ -40,7 +40,7 @@ private:
 	string file;
 	string data;
 	unsigned int getRelevantPC(); //this returns the index in the instructions vector
-	vector<string> UType = { "LUI", "AUIPC", "JAL" };
+	vector<string> UType = { "LUI", "AUIPC"};
 	vector<string> OffsetIType = { "JALR", "LB", "LH", "LW", "LBU", "LHU"};
 	vector<string> IType = { "ADDI", "SLTI", "SLTIU", "XORI", "ORI", "ANDI", "SLLI", "SRLI", "SRAI"};
 	vector<string> SType = { "SW", "SB", "SH" };
